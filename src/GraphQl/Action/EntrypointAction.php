@@ -15,6 +15,7 @@ namespace ApiPlatform\Core\GraphQl\Action;
 
 use ApiPlatform\Core\GraphQl\ExecutorInterface;
 use ApiPlatform\Core\GraphQl\Type\SchemaBuilderInterface;
+use ApiPlatform\Core\Util\RequestParser;
 use GraphQL\Error\Error;
 use GraphQL\Executor\ExecutionResult;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,7 +52,7 @@ final class EntrypointAction
             return new Response($this->twig->render('@ApiPlatform/Graphiql/index.html.twig', ['title' => $this->title]));
         }
 
-        list($query, $operation, $variables) = $this->parseRequest($request);
+        list($query, $operation, $variables) = $this->parseRequest(RequestParser::parseAndDuplicateRequest($request));
 
         if (null === $query) {
             return new JsonResponse(new ExecutionResult(null, [new Error('GraphQL query is not valid')]), Response::HTTP_BAD_REQUEST);
